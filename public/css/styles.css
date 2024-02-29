@@ -124,11 +124,51 @@ a img:hover {
     align-items: center; /* Center items vertically */
     text-align: center;
     width: 40%;
-    margin: 50px 0 250px 28.5%;
+    margin: 50px 0 50px 28.5%;
     flex-direction: column;
     border: 1px #57BA98 solid;
     border-radius: 10px;
     color: white;
     background-color: #3B945E;
     padding: 20px; /* Add padding for better appearance */
+}
+
+.best-books h2 {
+    background-color: #F2F2F2;
+    padding-top: 20px;
+    margin: 0;
+    text-align: center;
+}
+
+.book-list {
+    background-color: #F2F2F2;
+    padding-bottom: 45px;
+    margin-bottom: 65px;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.book {
+    border: 1px black solid;
+    border-radius: 10px;
+    width: 25%;
+    padding: 25px;
+    text-align: center;
+    margin:20px 0 20px 0;
+}
+
+.book img {
+    border: 1px black solid;
+    width: 50%;
+    border-radius: 5px;
+}
+
+.book h3 {
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+.book p {
+    color: #555;
+    margin: 5px 0;
 }
