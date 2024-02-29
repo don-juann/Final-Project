@@ -9,6 +9,7 @@ const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const User = require("./models/userSchema");
 const Book = require("./models/bookSchema");
+const { render } = require('ejs');
 
 // Middleware
 app.use(express.static(path.join(__dirname, "public")));
@@ -101,14 +102,20 @@ app.post('/register', async (req, res) => {
         if (!validPassword) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
-
-        // Set session variable
+        
         req.session.isLoggedIn = true;
 
         // Send login notification email
         login_nodemail(email);
+        
+        if (user.isAdmin) {
+          res.render('admin_panel');
+        }else{
+          res.render('index');
+        }
 
-        res.render('index');
+        
+
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

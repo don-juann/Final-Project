@@ -3,37 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Panel</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="../css/admin.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>Admin Panel - Online Bookstore</h1>
-        <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/books/new">Add New Book</a></li>
-                <li><a href="/admin/users">Manage Users</a></li>
-                <li><a href="/admin/orders">Manage Orders</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <h2>Welcome, Admin!</h2>
-        <p>Here you can manage the bookstore.</p>
-        <section>
-            <h3>Users</h3>
-            <!-- Display user list, edit, delete options -->
-        </section>
-        <section>
-            <h3>Orders</h3>
-            <!-- Display order list, edit, delete options -->
-        </section>
-    </main>
-    <footer>
-        <p>Created by Your Name</p>
-    </footer>
+    <div class="admin-section" id="user-management">
+        <h2>User Management</h2>
+        <div class="user-list" id="user-list">
+            <!-- User cards will be added here -->
+        </div>
+    </div>
+
+    <div class="admin-section" id="add-book-section">
+        <h2>Add Book</h2>
+        <form id="add-book-form">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required><br><br>
+            
+            <label for="author">Author:</label>
+            <input type="text" id="author" name="author" required><br><br>
+
+            <label for="publishedYear">Published Year:</label>
+            <input type="number" id="publishedYear" name="publishedYear" required><br><br>
+
+            <button type="submit" onclick="addBook()">Add Book</button>
+        </form>
+    </div>
+
+    <script src="../js/script-admin.js"></script>
 </body>
 </html>
