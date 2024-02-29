@@ -9,12 +9,7 @@ const bookSchema = new mongoose.Schema({
     },
     publishedYear: {
         type: Number,
-    },
-    rating: {
-        type: Number,
-        min: 0,
-        max: 10,
-    }
+    }    
 },{
     collection: "books",
     timestamps: true

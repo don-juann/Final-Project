@@ -8,12 +8,15 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const User = require("./models/userSchema");
+const Book = require("./models/bookSchema");
 
 // Middleware
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "public/views"));
 app.use(express.urlencoded({ extended: true })); 
+app.use(express.json())
+
 
 app.use(session({
   secret: 'keypass', // Change this to a random string
@@ -33,7 +36,7 @@ app.get('/register', async(req, res) => {
 app.get('/profile', async(req, res) => {
     res.render('profile');
 })
-app.get('/books', async(req, res) => {
+app.get('/allbooks', async(req, res) => {
     res.render('books');
 })
 
@@ -76,6 +79,7 @@ app.post('/register', async (req, res) => {
       });
   
       const savedUser = await newUser.save();
+      register_nodemail()
       res.render('login');
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -219,6 +223,105 @@ mongoose.connect(process.env.MONGO_LINK)
     console.log('Connected to MongoDB');
 })
 .catch(err => console.error('Error connecting to MongoDB:', err));
+
+// Create a new book
+app.post("/books", async (req, res) => {
+  try {
+      const { name, author, publishedYear } = req.body;
+
+      const existingBook = await Book.findOne({ name });
+      if (existingBook) {
+          return res.status(400).json({ message: 'Book already exists' });
+      }
+
+      const newBook = new Book({
+          name,
+          author,
+          publishedYear,
+      });
+
+      const savedBook = await newBook.save();
+      res.status(201).json(savedBook);
+  } catch (err) {
+      res.status(400).json({ message: err.message });
+  }
+});
+
+// Update a book by ID
+app.put("/books/:id", async (req, res) => {
+  try {
+      const { name, author, publishedYear } = req.body;
+      const updatedBook = await Book.findByIdAndUpdate(
+          req.params.id,
+          { name, author, publishedYear },
+          { new: true }
+      );
+      if (!updatedBook) {
+          return res.status(404).json({ message: "Book not found" });
+      }
+      res.json(updatedBook);
+  } catch (err) {
+      res.status(400).json({ message: err.message });
+  }
+});
+
+app.get('/books-search', async (req, res) => {
+    const searchValue = req.query.search;
+
+    try {
+        let books;
+        if (searchValue) {
+            // If there is a search value, find books that match the search
+            books = await Book.find({
+                name: { $regex: searchValue, $options: 'i' }  // Case-insensitive search for book name
+            });
+        } else {
+            // If no search value provided, return all books
+            books = await Book.find();
+        }
+
+        res.json(books);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Get all books
+app.get("/books", async (req, res) => {
+  try {
+      const books = await Book.find();
+      res.json(books);
+  } catch (err) {
+      res.status(500).json({ message: err.message });
+  }
+});
+
+// Get a single book by ID
+app.get("/books/:id", async (req, res) => {
+  try {
+      const book = await Book.findById(req.params.id);
+      if (!book) {
+          return res.status(404).json({ message: "Book not found" });
+      }
+      res.json(book);
+  } catch (err) {
+      res.status(500).json({ message: err.message });
+  }
+});
+
+// Delete a book by ID
+app.delete("/books/:id", async (req, res) => {
+  try {
+      const deletedBook = await Book.findByIdAndDelete(req.params.id);
+      if (!deletedBook) {
+          return res.status(404).json({ message: "Book not found" });
+      }
+      res.json({ message: "Book deleted" });
+  } catch (err) {
+      res.status(500).json({ message: err.message });
+  }
+});
+
 
 const port = process.env.PORT || 3000;
 

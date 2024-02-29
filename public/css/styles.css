@@ -172,3 +172,91 @@ a img:hover {
     color: #555;
     margin: 5px 0;
 }
+
+/* BOOKS.ejs */
+.search-bar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 50px;
+}
+
+.search-bar {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-bar input[type="text"] {
+    padding: 8px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    min-width: 300px;
+}
+
+.search-bar button {
+    padding: 8px 15px;
+    background-color: #182628;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#book-container, #searched-book {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    margin: 0 auto;
+    max-width: 1200px;
+    margin-bottom: 100px;
+}
+
+.book-card {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.book-card h2 {
+    margin: 0 0 10px 0;
+}
+
+.book-card p {
+    margin: 0;
+}
+
+
+@media screen and (max-width:768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+    }
+
+    .navbar nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .search-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .search-bar input[type="text"] {
+        min-width: 150px;
+    }
+
+    .book-container {
+        padding: 10px;
+    }
+
+    .book-card {
+        padding: 10px;
+    }
+}

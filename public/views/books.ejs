@@ -7,7 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-
 </head>
 <body>
     <header class="navbar">
@@ -15,17 +14,30 @@
             <ul>
                 <h1>Online Bookstore</h1>
                 <li><a href="/" id="home-link">Home</a></li>
-                <li><a href="/books" id="books-link">All Books</a></li>
+                <li><a href="/allbooks" id="books-link">All Books</a></li>
                 <li><a href="/profile" id="profile-link">Profile</a></li>
             </ul>
         </nav>
     </header>
-    <main class="main-content">
+
+    <div class="search-bar-container">
+        <div class="search-bar">
+            <button id="clearButton" style="display: none;" type="button" onclick="clearSearchBar()">Clear</button>
+            <input id="search-input" type="text" placeholder="Search...">
+            <button type="button" onclick="searchBooks()">Search</button>
+        </div>
+    </div>
+
+    <div id="searched-book" style="display: none;"></div>
+
+    <div id="book-container">
         
-    </main>
+    </div>
+
     <footer class="footer">
-        <h3>Created by Zhan Kazikhanov</p>
+        <h3>Created by Zhan Kazikhanov</h3>
     </footer>
-    <script src="script-book.js"></script>
+
+    <script src="../js/script-book.js"></script>
 </body>
 </html>
