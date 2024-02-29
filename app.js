@@ -1,43 +1,234 @@
 const express = require('express');
+const session = require('express-session');
+const mongoose = require('mongoose');
 const app = express();
 const path = require('path');
-const {db_connection} = require('./config/connect_to_db');
-const port = process.env.PORT;
-require('dotenv').config()
+const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
+const User = require("./models/userSchema");
+require('dotenv').config();
 
-//ADD APIs here
+const saltRounds = 10;
 
 // Middleware
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "public/views"));
+app.use(express.urlencoded({ extended: true })); 
 
-// Routes
-app.get("/", (req, res) => {
-    res.render("index.ejs");
-});
+app.use(session({
+  secret: 'your-secret-key', // Change this to a random string
+  resave: false,
+  saveUninitialized: true
+}));
 
-app.get('/books', async(req, res) => {
-    res.render('books'); // Renders login_register.ejs
-});
-
-app.get('/cart', async(req, res) => {
-    res.render('shopping_cart'); // Renders admin_panel.ejs
-});
-
+app.get('/', async(req, res) => {
+    res.render('index');
+})
 app.get('/login', async(req, res) => {
-    res.render('login_register'); // Renders login_register.ejs
-});
-
-app.get('/admin', async(req, res) => {
-    res.render('admin_panel'); // Renders admin_panel.ejs
-});
-
+    res.render('login');
+})
+app.get('/register', async(req, res) => {
+    res.render('register');
+})
 app.get('/profile', async(req, res) => {
-    res.render('profile'); // Renders admin_panel.ejs
+    res.render('profile');
+})
+app.get('/books', async(req, res) => {
+    res.render('books');
+})
+
+app.get('/check_login_status', (req, res) => {
+  const isLoggedIn = req.session.isLoggedIn || false;
+  res.json({ isLoggedIn });
 });
 
-db_connection()
+// Logout
+app.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+      if (err) {
+          return res.status(500).json({ message: 'Logout failed' });
+      }
+      res.redirect('/');
+  });
+});
+
+app.post('/register', async (req, res) => {
+    try {
+      const { fullName, dob, country, gender, email, username, password, isAdmin } = req.body;
+  
+      // Check if username or email already exists
+      const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Username or email already exists' });
+      }
+  
+      // Hash the password before saving
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      const newUser = new User({
+        fullName,
+        dob,
+        country,
+        gender,
+        email,
+        username,
+        password: hashedPassword,
+        isAdmin,
+      });
+  
+      const savedUser = await newUser.save();
+      res.json(savedUser);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+  
+  app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        // Check if user exists
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+
+        // Check password
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+
+        // Set session variable
+        req.session.isLoggedIn = true;
+
+        // Send login notification email
+        login_nodemail(email);
+
+        res.render('index');
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+
+
+  
+  // Get all users
+  app.get('/users', async (req, res) => {
+    try {
+      const users = await User.find();
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Get a single user by ID
+  app.get('/users/:id', async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Update a user by ID
+  app.put('/users/:id', async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      user.set(req.body);
+  
+      if (req.body.password) {
+        user.password = await bcrypt.hash(req.body.password, 10);
+      }
+  
+      const updatedUser = await user.save();
+      res.json(updatedUser);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Delete a user by ID
+  app.delete('/users/:id', async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      await user.remove();
+      res.json({ message: 'User deleted' });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+function register_nodemail(recipient) {
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    });
+
+    const mailOptions = {
+        to: recipient,
+        subject: "Welcome!",
+        text: "Welcome to our lovely Online Bookstore, we hope you have a great experience using our service!"
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+
+function login_nodemail(recipient) {
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    });
+
+    const mailOptions = {
+        to: recipient,
+        subject: "Warning!",
+        text: "Someone has just signed in by using your email and password, was it you?"
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+
+mongoose.connect(process.env.MONGO_LINK)
+.then(() => {
+    console.log('Connected to MongoDB');
+})
+.catch(err => console.error('Error connecting to MongoDB:', err));
+
+const port = process.env.PORT || 3000;
+
 app.listen(port, () => {
     console.log(`Server is running on port: http://localhost:${port}`);
 });

@@ -4,8 +4,8 @@ const userSchema = new mongoose.Schema({
     fullName: {
         type: String,
     },
-    age: {
-        type: Number,
+    dob: {
+        type: Date,
     },
     country: {
         type: String,
@@ -16,10 +16,6 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        unique: true,
-        lowercase: true,
-        trim: true,
-        match: [/\S+@\S+\.\S+/, 'Please enter a valid email'],
     },
     username: {
         type: String,
@@ -31,8 +27,15 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false,
     }
+},{
+    collection: "users",
+    timestamps: true
 });
 
 
-module.exports = mongoose.model('users', userSchema);
+module.exports = mongoose.model('User', userSchema);

@@ -1,0 +1,49 @@
+* {
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #65CCB8;
+    margin: 0;
+    padding: 0;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form input, select {
+    padding-left: 5px;
+    width: 250px;
+    height: 25px;
+    border: 0;
+    border-radius: 5px;
+}
+
+form button {
+    padding-left: 5px;
+    cursor: pointer;
+    width: 255px;
+    height: 30px;
+    border: 0;
+    border-radius: 5px;
+    margin-top: 23px;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:link, a:visited {
+    color: white;
+}
+
+form button:hover {
+    color: white;
+    background-color: #182628;
+}

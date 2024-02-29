@@ -2,6 +2,26 @@
     font-family: "Poppins", sans-serif;
 }
 
+*::-webkit-scrollbar {
+    width: 0;
+}
+
+.carousel-container {
+    height: 600px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.carousel-slide {
+    display: none;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: auto;
+}
+
+
 body {
     background-color: #65CCB8;
     margin: 0;
@@ -11,7 +31,7 @@ body {
 .nav {
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-between;
 }
 
 #exitIcon {
@@ -55,11 +75,15 @@ body {
     border-radius: 10px;
 }
 
-.navbar a:hover {
+ul a:hover, #signBtn:hover {
     color: white;
     background-color: #182628; /* Darker background color on hover */
     border: 0;
     border-radius: 10px;
+}
+
+a img:hover {
+    background-color: transparent;
 }
 
 /* Main Content Styles */
@@ -91,5 +115,5 @@ body {
     background-color: #182628;
     color: white;
     text-align: center;
-    padding: 10px 0;
+    padding: 15px 0 0 0;
 }
