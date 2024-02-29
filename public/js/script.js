@@ -54,8 +54,35 @@ document.addEventListener("DOMContentLoaded", function() {
     showSlide(currentSlide);
 
     // Change slide every 10 seconds
-    setInterval(nextSlide, 10000);
+    setInterval(nextSlide, 10000);    
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    const quotesDiv = document.getElementById('quotes');
+
+    fetch('https://api.api-ninjas.com/v1/quotes?category=happiness', {
+        headers: {
+            'X-Api-Key': '8NSItaW/ng/lQkMTBny8AQ==jMSrO4P3UNuoMatq',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data && data.length > 0) {
+            const quote = data[0].quote;
+            const author = data[0].author;
+            quotesDiv.innerHTML = `<blockquote>"${quote}"</blockquote><p>- ${author}</p>`;
+            quotesDiv.style.display = 'block'; // Show the quotes
+        } else {
+            quotesDiv.innerHTML = '<p>No quotes found</p>';
+            quotesDiv.style.display = 'flex';
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching quotes:', error);
+        quotesDiv.innerHTML = '<p>No Quotes Available At This Time</p>';
+        quotesDiv.style.display = 'block'; // Show error message
+    });
+})
 
 document.addEventListener('DOMContentLoaded', function () {
     const signBtn = document.getElementById('signBtn');
@@ -93,3 +120,5 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error:', error));
     });
 });
+
+

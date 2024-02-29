@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
@@ -6,9 +8,6 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 const User = require("./models/userSchema");
-require('dotenv').config();
-
-const saltRounds = 10;
 
 // Middleware
 app.use(express.static(path.join(__dirname, "public")));
@@ -17,7 +16,7 @@ app.set("views", path.join(__dirname, "public/views"));
 app.use(express.urlencoded({ extended: true })); 
 
 app.use(session({
-  secret: 'your-secret-key', // Change this to a random string
+  secret: 'keypass', // Change this to a random string
   resave: false,
   saveUninitialized: true
 }));
@@ -43,7 +42,6 @@ app.get('/check_login_status', (req, res) => {
   res.json({ isLoggedIn });
 });
 
-// Logout
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
       if (err) {
@@ -78,7 +76,7 @@ app.post('/register', async (req, res) => {
       });
   
       const savedUser = await newUser.save();
-      res.json(savedUser);
+      res.render('login');
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -112,10 +110,6 @@ app.post('/register', async (req, res) => {
     }
 });
 
-
-
-  
-  // Get all users
   app.get('/users', async (req, res) => {
     try {
       const users = await User.find();
@@ -162,11 +156,10 @@ app.post('/register', async (req, res) => {
   // Delete a user by ID
   app.delete('/users/:id', async (req, res) => {
     try {
-      const user = await User.findById(req.params.id);
+      const user = await User.findByIdAndDelete(req.params.id);
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
-      await user.remove();
       res.json({ message: 'User deleted' });
     } catch (error) {
       res.status(500).json({ message: error.message });

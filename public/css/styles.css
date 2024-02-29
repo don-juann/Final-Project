@@ -117,3 +117,18 @@ a img:hover {
     text-align: center;
     padding: 15px 0 0 0;
 }
+
+.quotes-container {
+    display: flex;
+    justify-content: center; /* Center items horizontally */
+    align-items: center; /* Center items vertically */
+    text-align: center;
+    width: 40%;
+    margin: 50px 0 250px 28.5%;
+    flex-direction: column;
+    border: 1px #57BA98 solid;
+    border-radius: 10px;
+    color: white;
+    background-color: #3B945E;
+    padding: 20px; /* Add padding for better appearance */
+}
