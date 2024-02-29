@@ -77,8 +77,12 @@ function deleteUser(userId) {
 
 // Make Admin
 function makeAdmin(userId) {
-    fetch(`/users/${userId}/admin`, {
-        method: 'PUT'
+    fetch(`/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ isAdmin: true }) // Update isAdmin to true
     })
     .then(response => {
         if (!response.ok) {
@@ -90,6 +94,7 @@ function makeAdmin(userId) {
         console.error('Error making user admin:', error);
     });
 }
+
 
 // Add Book
 function addBook(event) {

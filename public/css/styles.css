@@ -230,6 +230,16 @@ a img:hover {
     margin: 0;
 }
 
+#user-details {
+    display: flex;
+    justify-content: start;
+    flex-direction: column;
+    text-align: start;
+}
+#user-details li{
+    list-style-type: none;
+}
+
 
 @media screen and (max-width:768px) {
     .navbar {

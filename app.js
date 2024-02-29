@@ -18,7 +18,6 @@ app.set("views", path.join(__dirname, "public/views"));
 app.use(express.urlencoded({ extended: true })); 
 app.use(express.json())
 
-
 app.use(session({
   secret: 'keypass', // Change this to a random string
   resave: false,
@@ -34,12 +33,59 @@ app.get('/login', async(req, res) => {
 app.get('/register', async(req, res) => {
     res.render('register');
 })
-app.get('/profile', async(req, res) => {
-    res.render('profile');
-})
 app.get('/allbooks', async(req, res) => {
     res.render('books');
 })
+
+app.get('/profile', async (req, res) => {
+  try {
+      // Check if user is logged in
+      if (!req.session.isLoggedIn) {
+          // Redirect to login if not logged in
+          return res.redirect('/login');
+      }
+
+      // Fetch the currently logged-in user's data
+      const userId = req.session.userId;
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Check if it's an API call (Accept header)
+      if (req.headers.accept && req.headers.accept.includes('application/json')) {
+          // If it's an API call, send JSON response
+          res.json({
+              fullName: user.fullName,
+              username: user.username,
+              email: user.email,
+              country: user.country,
+              gender: user.gender
+          });
+      } else {
+          // Otherwise, render the profile template with user data
+          res.render('profile', { user });
+      }
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+});
+
+app.get('/background', async (req, res) => {
+  const description = req.query.description;
+  try {
+      const response = await fetch(`https://api.unsplash.com/photos/random?query=${description}&orientation=landscape&client_id=${'SOA6Q1M5Q4FzVBAWGg0JhyNIHjKfqGzbbDljY5GGfJY'}`);
+      if (!response.ok) {
+          throw new Error('Failed to fetch image from Unsplash API');
+      }
+      const data = await response.json();
+      res.json(data);
+  } catch (error) {
+      console.error('Error fetching background image:', error.message); // Log the error
+      res.status(500).json({ error: 'Internal Server Error' }); // Send a 500 response
+  }
+});
+
 
 app.get('/check_login_status', (req, res) => {
   const isLoggedIn = req.session.isLoggedIn || false;
@@ -104,7 +150,7 @@ app.post('/register', async (req, res) => {
         }
         
         req.session.isLoggedIn = true;
-
+        req.session.userId = user._id;
         // Send login notification email
         login_nodemail(email);
         
@@ -328,7 +374,6 @@ app.delete("/books/:id", async (req, res) => {
       res.status(500).json({ message: err.message });
   }
 });
-
 
 const port = process.env.PORT || 3000;
 
