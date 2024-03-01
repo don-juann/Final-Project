@@ -71,6 +71,29 @@ app.get('/profile', async (req, res) => {
   }
 });
 
+app.put('/profile', async (req, res) => {
+  try {
+      const userId = req.session.userId;
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Update user fields
+      const { username, email, country, gender } = req.body;
+      if (username) user.username = username;
+      if (email) user.email = email;
+      if (country) user.country = country;
+      if (gender) user.gender = gender;
+
+      const updatedUser = await user.save();
+      res.json(updatedUser);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+});
+
+
 app.get('/background', async (req, res) => {
   const description = req.query.description;
   try {

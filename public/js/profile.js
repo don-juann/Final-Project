@@ -27,38 +27,38 @@ document.addEventListener("DOMContentLoaded", async () => {
         changeBackgroundImage(description);
 
         // Edit username
-        document.getElementById('edit-username').addEventListener('click', () => {
+        document.getElementById('edit-username').addEventListener('click', async () => {
             const newUsername = prompt('Enter new username:');
             if (newUsername) {
                 username.textContent = newUsername;
-                // Here you can send an AJAX request to update the username on the server
+                await updateUserField('username', newUsername);
             }
         });
 
         // Edit email
-        document.getElementById('edit-email').addEventListener('click', () => {
+        document.getElementById('edit-email').addEventListener('click', async () => {
             const newEmail = prompt('Enter new email:');
             if (newEmail) {
                 email.textContent = newEmail;
-                // Here you can send an AJAX request to update the email on the server
+                await updateUserField('email', newEmail);
             }
         });
 
         // Edit country
-        document.getElementById('edit-country').addEventListener('click', () => {
+        document.getElementById('edit-country').addEventListener('click', async () => {
             const newCountry = prompt('Enter new country:');
             if (newCountry) {
                 country.textContent = newCountry;
-                // Here you can send an AJAX request to update the country on the server
+                await updateUserField('country', newCountry);
             }
         });
 
         // Edit gender
-        document.getElementById('edit-gender').addEventListener('click', () => {
+        document.getElementById('edit-gender').addEventListener('click', async () => {
             const newGender = prompt('Enter new gender:');
             if (newGender) {
                 gender.textContent = newGender;
-                // Here you can send an AJAX request to update the gender on the server
+                await updateUserField('gender', newGender);
             }
         });
 
@@ -66,6 +66,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error('Error fetching user data:', error);
     }
 });
+
+async function updateUserField(field, value) {
+    try {
+        const response = await fetch('/profile', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                [field]: value
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update user data');
+        }
+
+        const updatedUserData = await response.json();
+        console.log('User data updated:', updatedUserData);
+    } catch (error) {
+        console.error('Error updating user data:', error);
+    }
+}
 
 function changeBackgroundImage(description) {
     fetch(`/background?description=${encodeURIComponent(description)}`)
